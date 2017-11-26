@@ -8,4 +8,10 @@ imooc_node_mongodb
 3.开启后台服务：node bin/www （在server目录下）  
 4.开启前端： npm run dev（在workspace目录下）  
 
+webpack  
+# build for production with minification
+npm run build
+
+# build for production and view the bundle analyzer report
+npm run build --report
  

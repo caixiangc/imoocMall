@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>VueX-Action</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script src="../node_modules/vue/dist/vue.js"></script>
+<script src="../node_modules/vuex/dist/vuex.min.js"></script>
+</head>
+<body>
+    <div id="app">
+    	<h2>{{msg}}</h2>
+    	<counter></counter>
+    	<a href="javascript:;" @click="add">点击+1</a>
+    </div>
+    <script>
+    	const counter = {
+    		template:`
+    		<div>
+    			<div>点击数量：{{count}}</div>
+				<div>updatename：{{name}}</div>	
+                <div>getters修饰name：{{username}}</div>     		
+    		</div>	
+    		`,
+    		computed:{
+    			count(){ 
+    				return this.$store.state.count
+    			},
+    			name(){
+    				return this.$store.state.name
+    			},
+                username(){
+                  return this.$store.getters.get_username//getter.后面可以是方法或者是变量名
+                }
+    		}
+    	}
+    	const storeVuex = new Vuex.Store({ //创建一个store的实例
+    		state:{   //state的状态是拖过$store.state获取，getters里的状态是通过$store.getters里获取，这个是对应的，都是挂载（注册）到$store这个实例上面去的
+    			count:10, //这里的变量是叫‘状态’
+    			name:'jack'
+    		},
+            getters:{ // getter是得到的意思，是处理state里面的数据
+                get_username(state){ //只要往这个函数里面传state 那么就可以拿到上面 state里面所有变量
+                    return state.name + '。hello'; 
+                }
+            },
+    		mutations:{  //*****这个是改变状态的唯一途径
+    			increame(state,num){  //这里的state就是指的是storeVuex里面的state
+    				state.count=state.count+num;
+    			},
+    			updateName(state,username){//mutations每个方法之间一定要逗号隔开
+    				state.name = username
+    			}
+    		},
+            actions:{//Action是用来控制mutations的异步操作
+                increameAction(context,num){ //action只是个定义需要用户去触发
+                    context.commit("increame",num); //context.commit可以代替this.$store.commit()
+                    context.commit("updateName",'Maaa')
+                }
+            }
+    	})
+
+    	new Vue({ //创建一个vue的实例
+    		el:"#app",         //一般会把上面的counter注册到new Vue这个实例里面去
+    		store:storeVuex,  //如果key value是一致的那么可以只写一个
+    		data:{
+    			msg:"Vue的使用"
+    		},
+    		components:{
+    			counter
+    		},
+    		methods:{
+    			add(){
+    				//this.$store.commit('increame',100); //想要改变其他对象里面的值，只能用这种格式
+    			    //this.$store.commit('updateName','mayun'); //只要是mutations 一定是通过$store.commit提交的
+    			     this.$store.dispatch("increameAction",5) //这个是配套actions 使用的
+                }
+    		}
+    	})
+    </script>
+</body>
+</html>
